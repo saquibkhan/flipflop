@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Flipper Game</title>
+
+	<script type="text/javascript" src="javascript/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="javascript/jquery.color-2.1.2.js"></script>
+
+	<style type="text/css">
+		
+		table{
+/*			border:solid;
+			border-color: green;
+			width: 50%;
+*/			margin: 5%;
+			height: 200px;
+		}
+		td{
+
+			border: solid;
+			border-color: pink;
+			width: 5%;
+			background: red;
+		}
+
+	</style>
+
+
+
+
+	<script type="text/javascript">
+
+		var matrixNum;
+		var moves;
+
+	    (function(){
+	        window.addEventListener("DOMContentLoaded", init);
+	    }());
+
+	    function init()
+	    {
+			console.log("Welcome to Flipper");
+
+			document.getElementById("btnGo").addEventListener("click", onGoClicked);
+			document.getElementById("btnSolve").addEventListener("click", onSolveClicked);
+
+	    }
+
+
+
+
+
+		function onSolveClicked()
+		{
+		}
+
+
+	    function onGoClicked()
+	    {
+	    	moves = 0;
+	    	matrixNum = parseInt(document.getElementById("matrixNum").value);
+	    	console.log("Number:",matrixNum);
+
+			var newHTML = "<table id=matrixTable>";
+
+			for(var i = 0; i<matrixNum; i++)
+			{
+				newHTML+="<tr>";
+				for(var j = 0; j<matrixNum; j++)
+				{
+					newHTML+="<td row="+i+" "+"col="+j+">0</td>";
+				}
+				newHTML+="</tr>";
+			}
+	
+			newHTML+="</table>";
+
+			newHTML+="<span>Number of moves: </span>";
+			newHTML+="<span id=moves>0</span><br/>";
+			newHTML+="<span id=winner></span>";
+
+			console.log(newHTML);
+
+			document.getElementById("matrix").innerHTML = newHTML;
+
+			var cells = document.getElementsByTagName("td");
+			//var cells = document.getElementById("matrixTable").cells
+			console.log(cells);
+			
+			for(var i = 0; i<cells.length; i++)
+			{
+				//console.log(cells[i]);
+				cells[i].onclick = onCellClicked;
+			}
+			
+	    }
+
+	    function onCellClicked()
+	    {
+	    	console.log("cell: ");
+	    	console.log("row: " + this.parentNode.rowIndex);
+	    	console.log("col: " + this.cellIndex);
+	    	
+	    	flip(this.parentNode.rowIndex, this.cellIndex);
+
+	    	if (isGameOver())
+			{
+				document.getElementById("winner").innerHTML = "<span style=color:green>Winner!!! Flips used:"+moves+"</span>";
+				//document.getElementById("matrix").innerHTML += "<span style=color:green>Winner!!! Flips used:"+moves+"</span>";
+				//document.getElementById("matrix").innerHTML += "<h2>Winner!!!   <span style=color:green>Flips used:"+moves+"</span></h2>";
+
+			}
+	    }
+
+
+		function flip(r,c)
+		{
+			//Given a cell with row:r and column:c
+			//Flip the cell with top,bottom,left and right
+
+
+			if (r<0 || c<0 || r>=matrixNum || c>=matrixNum)
+				return;
+
+			console.log("Flipping...");
+			console.log("x,y : ",r,c);
+
+			console.log();
+
+			flipValue(r,c);
+			
+
+			var flip = [[-1,0],[1,0],[0,-1],[0,1]];
+
+			for (var i = 0; i<flip.length; i++)
+			{
+				x=r,y=c;
+
+				x+=flip[i][0];
+				y+=flip[i][1];
+
+				if (x<0 || y<0 || x>=matrixNum || y>=matrixNum)
+					continue;
+
+				console.log("x,y :",x,y);
+				flipValue(x,y);
+			}
+
+			moves++;
+			document.getElementById("moves").innerHTML = moves;
+		}
+
+		function isGameOver()
+		{
+			for (var i=0; i<matrixNum; i++)
+				for(var j=0; j<matrixNum; j++)
+					if (parseInt(document.getElementById("matrixTable").rows[i].cells[j].innerHTML) == 0)
+						return false;
+
+			return true;
+		}
+
+		function flipValue(r,c)
+		{
+			var $myTable = $('#matrixTable'), myTable = $myTable[0]; 
+
+			var v = parseInt(myTable.rows[r].cells[c].innerHTML);//parseInt(document.getElementById("matrixTable").rows[r].cells[c].innerHTML);
+			if (v == 0)
+			{
+				v=1;
+				//document.getElementById("matrixTable").rows[r].cells[c].style.backgroundColor = '#00ff00';
+				$( '#matrixTable tr:eq(' + r + ') td:eq(' + c + ')' ).animate({"backgroundColor":"#00ff00"},500);
+			}
+			else
+			{
+				v=0;
+				//document.getElementById("matrixTable").rows[r].cells[c].style.backgroundColor = '#ff0000';
+				$( '#matrixTable tr:eq(' + r + ') td:eq(' + c + ')' ).animate({"backgroundColor":"#ff0000"},200);
+
+			}
+
+			myTable.rows[r].cells[c].innerHTML = v; 
+			//document.getElementById("matrixTable").rows[r].cells[c].innerHTML=v;
+		}
+
+
+	</script>
+
+</head>
+<body>
+
+<h1>Welcome to Flipper</h1>
+
+<span>Enter Matrix Number:</span>
+<input type="text" name="" value=3 id="matrixNum">
+<input type="button" value="Go!" id="btnGo">
+<input type="button" value="Solve" id="btnSolve"> <br/>
+
+<div id="matrix">
+</div>
+
+
+</body>
+</html>
